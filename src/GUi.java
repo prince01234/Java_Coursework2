@@ -836,7 +836,7 @@ public class GUi {
         // catching exception when invalid data type is entered
         catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(frame,
-                    "Teacher ID, Years of Experience and Working Hours should be in number.", "Invalid input!",
+                    "Teacher ID, Years of Experience and Working Hours should be in positive number.", "Invalid input!",
                     JOptionPane.ERROR_MESSAGE);
         }
         // exception handling if textfield are empty
@@ -942,6 +942,9 @@ public class GUi {
     // methond for converting string into int
     private int toInt(String text) {
         int intValue = Integer.parseInt(text);
+        if (intValue > 0) {
+            throw new NumberFormatException();
+        }
         return intValue;
     }
 
