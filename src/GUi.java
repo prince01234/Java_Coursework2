@@ -76,7 +76,7 @@ public class GUi {
         buttonFont = new Font("Copperplate Gothic Bold", Font.PLAIN, 13);
         menuFont = new Font("MV Boli", Font.BOLD, 20);
         welcomeFont = new Font("Goudy Old Style", Font.ITALIC, 17);
-        welcome2Font = new Font("Lucida Calligraphy", Font.BOLD, 30);
+        welcome2Font = new Font("MV Boli", Font.BOLD, 30);
 
         // creating main panel to put content together
         mainPanel = new JPanel(null); // Null layout
@@ -611,6 +611,9 @@ public class GUi {
         setSalaryButton.setFont(buttonFont);
         setSalaryButton.setFocusPainted(false);
         setSalaryPanel.add(setSalaryButton);
+        setSalaryButton.addActionListener(e -> {
+            setSalary();
+        });
 
         // panel for remove tutor
         removeTutorPanel = new JPanel(null);
@@ -648,6 +651,9 @@ public class GUi {
         removeTutorButton.setFont(buttonFont);
         removeTutorButton.setFocusPainted(false);
         removeTutorPanel.add(removeTutorButton);
+        removeTutorButton.addActionListener(e -> {
+            removeTutor();
+        });
 
         // button for clearing all fields
         clearTutorButton = new JButton("CLEAR   ALL   FIELDS");
@@ -717,6 +723,9 @@ public class GUi {
         displayIdButton.setFont(buttonFont);
         displayIdButton.setFocusPainted(false);
         displayPanel.add(displayIdButton);
+        displayIdButton.addActionListener(e -> {
+            displayID();
+        });
 
         displayAllLabel = new JLabel("OR");
         displayAllLabel.setBounds(20, 180, 70, 40);
@@ -788,6 +797,7 @@ public class GUi {
     private void gradeScore() {
         try {
             // fetching data from grade assignment
+            String msg = "";
             String teachId = getText(gradeAssignmentIdTextField);
             String gradScore = getText(gradeScoreTextField);
             String teachDepartment = getText(gradeDepartmentTextField);
@@ -811,7 +821,7 @@ public class GUi {
                 return;
             }
             if (!(teacher instanceof Lecturer)) {
-                JOptionPane.showMessageDialog(frame, "Tutor cannot assgin grade.\n Please! Enter a lecturer ID.",
+                JOptionPane.showMessageDialog(frame, "Tutor cannot assgin grade.\n Please! Enter a lecturer ID:",
                         "INVALID", JOptionPane.ERROR_MESSAGE);
                 return;
             }
@@ -819,18 +829,22 @@ public class GUi {
             Lecturer lecturer = (Lecturer) teacher;
 
             if (!(experience >= 5 && teachDepartment.equals(lecturer.getDepartment()))) {
-                JOptionPane.showMessageDialog(frame, "Lecturer's department not same or \n Working hour not qualified! ",
+                JOptionPane.showMessageDialog(frame,
+                        "Lecturer's department not same or \n Working hour not qualified! ",
                         "Not Qualified", JOptionPane.ERROR_MESSAGE);
             } else {
-                int comfirm = JOptionPane.showConfirmDialog(frame, "Do you want to grade the assignment?", "Comfirm",
-                        JOptionPane.OK_CANCEL_OPTION);
-                if (comfirm == JOptionPane.CANCEL_OPTION) {
+                msg = "Do you want to grade the assignment? \n \n";
+                msg += "Teacher ID:  " + id + "\n";
+                msg += "Graded Score: " + gradedScore + "\n";
+                msg += "Department: " + teachDepartment + "\n";
+                msg += "Years of Experience: " + experience + "\n";
+                int comfirm = JOptionPane.showConfirmDialog(frame, msg, "Comfirm", JOptionPane.OK_CANCEL_OPTION);
+                if (comfirm == JOptionPane.OK_OPTION) {
+                    lecturer.gradeAssignment(gradedScore, teachDepartment, experience);
+                    JOptionPane.showMessageDialog(frame, "Assignment successfully graded.", "Successfull",
+                            JOptionPane.INFORMATION_MESSAGE);
                     return;
                 }
-                lecturer.gradeAssignment(gradedScore, teachDepartment, experience);
-                JOptionPane.showMessageDialog(frame, "Assignment successfully graded.", "Successfull",
-                        JOptionPane.INFORMATION_MESSAGE);
-                return;
             }
         }
         // catching exception when invalid data type is entered
@@ -884,8 +898,114 @@ public class GUi {
         // catching exception when invalid data type is entered
         catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(frame,
-                    "Teacher ID, Working Hours, Salary and Performance Index should be in number.", "Invalid input!",
+                    "Teacher ID, Working Hours, Salary and Performance Index should be in positive number.",
+                    "Invalid input!",
                     JOptionPane.ERROR_MESSAGE);
+        }
+        // exception handling if textfield are empty
+        catch (IllegalArgumentException e) {
+            JOptionPane.showMessageDialog(frame, "Fill all the Fields.", "Empty Field", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    //
+    private void setSalary() {
+        try {
+            // getting data from set salary text fields
+            String teachId = getText(setSalaryIdTextField);
+            String teachSalary = getText(setSalaryNewSalaryTextField);
+            String teachIndex = getText(setSalaryPerformanceIndexTextField);
+
+            // changing data type as needed
+            int id = toInt(teachId);
+            double salary = Double.parseDouble(teachSalary);
+            int index = toInt(teachIndex);
+
+            if (index > 10) {
+                JOptionPane.showMessageDialog(frame, "Performance index should be between (0-10)", "Invalid index",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            Teacher teacher = getId(id);
+            if (teacher == null) {
+                JOptionPane.showMessageDialog(frame, "No teacher found of this ID", "No ID found!",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            if (!(teacher instanceof Tutor)) {
+                JOptionPane.showMessageDialog(frame, "Lecturer's salary cannot be set. \n Enter a Tutor's ID:",
+                        "INVALID", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            Tutor tutor = (Tutor) teacher;
+            if (!(index >= 5 && tutor.getWorkingHours() > 20)) {
+                JOptionPane.showMessageDialog(frame, "Insufficient working hour or \n Performance index", "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            int comfirm = JOptionPane.showConfirmDialog(frame, "Do you want to set salary?", "Comfirm?",
+                    JOptionPane.OK_CANCEL_OPTION);
+            if (comfirm == JOptionPane.OK_OPTION) {
+                tutor.setSalaryPerformance(salary, index);
+                JOptionPane.showMessageDialog(frame,
+                        "Teacher's salary approval successfull. \n" + "New Salary: " + tutor.getSalary(),
+                        "Sucessfull", JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+        }
+
+        // catching exception when invalid data type is entered
+        catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(frame,
+                    "Teacher ID, Salary and Performance Index should be in positive number.", "Invalid input!",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+        // exception handling if textfield are empty
+        catch (IllegalArgumentException e) {
+            JOptionPane.showMessageDialog(frame, "Fill all the Fields.", "Empty Field", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    // method for calling remove tutor
+    private void removeTutor() {
+        try {
+            String teachId = getText(removeTutorIdTextField);
+            int id = toInt(teachId);
+
+            Teacher teacher = getId(id);
+            if (teacher == null) {
+                JOptionPane.showMessageDialog(frame, "No teacher found of this ID.", "Invalid ID",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            if (!(teacher instanceof Tutor)) {
+                JOptionPane.showMessageDialog(frame, "Given ID is of Lecturer \n Cannot remove!", "Invalid ID",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            Tutor tutor = (Tutor) teacher;
+            if (tutor.getIsCertified()) {
+                JOptionPane.showMessageDialog(frame, "Certified tutor cannot be removed", "ERROR",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            int comfirm = JOptionPane.showConfirmDialog(frame, "Do you want remove the Tutor?", "Comfirm?",
+                    JOptionPane.OK_CANCEL_OPTION);
+            if (comfirm == JOptionPane.OK_OPTION) {
+                tutor.removeTutor();
+                JOptionPane.showMessageDialog(frame, "Tutor successfully removed.", "Successful",
+                        JOptionPane.INFORMATION_MESSAGE);
+            }
+        }
+        // catching exception when invalid data type is entered
+        catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(frame,
+                    "Teacher ID be in positive number.", "Invalid input!", JOptionPane.ERROR_MESSAGE);
         }
         // exception handling if textfield are empty
         catch (IllegalArgumentException e) {
@@ -930,6 +1050,50 @@ public class GUi {
         removeTutorIdTextField.setText("");
     }
 
+    // method for calling display teacher
+    private void displayID(Teacher teacher) {
+
+        String msg = "";
+
+        msg = "Teacher Id: " + teacher.getTeacherId() + "\n";
+        msg += "Teacher Name: " + teacher.getTeacherName() + "\n";
+        msg += "Address: " + teacher.getAddress() + "\n";
+        msg += "Working Type: " + teacher.getWorkingType() + "\n";
+        msg += "Employment Status: " + teacher.getEmploymentStatus() + "\n";
+        if (teacher.getWorkingHours() == 0) {
+            msg += "Working Hours: " + teacher.getWorkingHours() + "\n";
+        }
+
+        // specific information based on a teacher type: Lecturer
+        if (teacher instanceof Lecturer) {
+            Lecturer lecturer = (Lecturer) teacher;
+            msg += "Department: " + lecturer.getDepartment() + "\n";
+            msg += "Years Of Experience: " + lecturer.getYearsOfExperience() + "\n";
+            if (lecturer.getHasGraded()) {
+                msg += "Graded Score: " + lecturer.getGradedScore() + "\n";
+            } else {
+                msg += "The lecturer has not graded the assignment yet!";
+            }
+        } else {
+            Tutor tutor = (Tutor) teacher;
+            if (tutor.getIsCertified()) {
+                msg += "Salary: " + tutor.getSalary() + "\n";
+                msg += "Specialization: " + tutor.getSpecialization() + "\n";
+                msg += "Academic Qualifications: " + tutor.getAcademicQualifications() + "\n";
+                msg += "Performance Index: " + tutor.getPerformanceIndex() + "\n";
+            }
+        }
+        teacher.display();
+        String title = "";
+        if (teacher instanceof Lecturer) {
+            title = "Lecturer Info";
+        } else {
+            title = "Tutor info";
+        }
+
+        JOptionPane.showMessageDialog(frame, msg, title, JOptionPane.INFORMATION_MESSAGE);
+    }
+
     // textfield trimmer
     private String getText(JTextField tf) {
         String content = tf.getText().trim();
@@ -942,7 +1106,7 @@ public class GUi {
     // methond for converting string into int
     private int toInt(String text) {
         int intValue = Integer.parseInt(text);
-        if (intValue > 0) {
+        if (intValue < 0) {
             throw new NumberFormatException();
         }
         return intValue;

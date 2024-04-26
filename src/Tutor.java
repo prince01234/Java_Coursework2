@@ -62,21 +62,21 @@ public class Tutor extends Teacher
     public void setSalaryPerformance(double newSalary, int newPerformanceIndex)
     {
         //checking the condition for salary 
-        if (newPerformanceIndex > 5 && getWorkingHours() > 20)
+        if (newPerformanceIndex >= 5 && getWorkingHours() > 20)
         {
-            double appraisal;
+            double appraisal ;
             if( newPerformanceIndex >= 5 && newPerformanceIndex <=7)
 
             {
-                appraisal = 0.05 * salary; 
+                appraisal = 0.05 * newSalary; 
             }
             else if( newPerformanceIndex >= 8 && newPerformanceIndex <=9)
             {
-                appraisal = 0.10 * salary;
+                appraisal = 0.10 * newSalary;
             }
             else
             {
-                appraisal = 0.20 * salary;
+                appraisal = 0.20 * newSalary;
             }
 
 
