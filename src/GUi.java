@@ -724,6 +724,7 @@ public class GUi {
         displayIdButton.setFocusPainted(false);
         displayPanel.add(displayIdButton);
         displayIdButton.addActionListener(e -> {
+
             displayID();
         });
 
@@ -1051,8 +1052,36 @@ public class GUi {
     }
 
     // method for calling display teacher
-    private void displayID(Teacher teacher) {
+    private void displayID() {
+        try {
+            String teachID = getText(displayIdTextField);
 
+            int id = toInt(teachID);
+
+            Teacher teacher = getId(id);
+
+            // checking if teacher id is registered or not
+            if (teacher == null) {
+                JOptionPane.showMessageDialog(frame, "No teacher registered of this ID!", "Invalid ID",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            displayPane(teacher);
+        }
+        // Catching exception thrown when changing the data type
+        catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(frame, " Teacher ID must be a positive number", "Invalid Input",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+        // Catching exception thrown if any of the field is empty
+        catch (IllegalArgumentException e) {
+            JOptionPane.showMessageDialog(frame, "Fill the TeacherId Field.", "Empty Field",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void displayPane(Teacher teacher){
         String msg = "";
 
         msg = "Teacher Id: " + teacher.getTeacherId() + "\n";
@@ -1060,11 +1089,11 @@ public class GUi {
         msg += "Address: " + teacher.getAddress() + "\n";
         msg += "Working Type: " + teacher.getWorkingType() + "\n";
         msg += "Employment Status: " + teacher.getEmploymentStatus() + "\n";
-        if (teacher.getWorkingHours() == 0) {
+        if (teacher.getWorkingHours() > 0) {
             msg += "Working Hours: " + teacher.getWorkingHours() + "\n";
         }
 
-        // specific information based on a teacher type: Lecturer
+        // specific information based on a teacher type: Lecturer or tutor
         if (teacher instanceof Lecturer) {
             Lecturer lecturer = (Lecturer) teacher;
             msg += "Department: " + lecturer.getDepartment() + "\n";
