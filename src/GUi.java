@@ -178,6 +178,9 @@ public class GUi {
         displayIdButton.setFont(buttonFont);
         displayIdButton.setFocusPainted(false);
         displayPanel.add(displayIdButton);
+        displayIdButton.addActionListener(e -> {
+            displayID();
+        });
 
         displayAllLabel = new JLabel("OR");
         displayAllLabel.setBounds(20, 180, 70, 40);
@@ -743,6 +746,9 @@ public class GUi {
         displayAllButton.setFocusPainted(false);
         displayAllButton.setBorder(buttonBorder);
         displayPanel.add(displayAllButton);
+        displayAllButton.addActionListener(e -> {
+            displayAllTeachers();
+        });
 
         contentPanel.revalidate();
         contentPanel.repaint();
@@ -1161,4 +1167,52 @@ public class GUi {
         return null;
     }
 
+    private void displayAllTeachers() {
+        if (teacherList.isEmpty()) {
+            JOptionPane.showMessageDialog(frame, "No teachers registered!", "Empty List",
+                    JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+    
+        String msg = "List of Teachers:\n\n";
+        
+
+        for (Teacher teacher : teacherList) {
+            msg += "Teacher ID: " + teacher.getTeacherId() + "\n";
+            msg += "Name: " + teacher.getTeacherName() + "\n";
+            msg += "Address: " + teacher.getAddress() + "\n";
+            msg += "Working Type: " + teacher.getWorkingType() + "\n";
+            msg += "Employment Status: " + teacher.getEmploymentStatus() + "\n";
+            if (teacher.getWorkingHours() == 0) {
+                msg += "Working Hours: " + teacher.getWorkingHours() + "\n";
+            }
+            
+            if (teacher instanceof Lecturer) {
+                Lecturer lecturer = (Lecturer) teacher;
+                msg += "Type: Lecturer\n";
+                msg += "Department: " + lecturer.getDepartment() + "\n";
+                msg += "Years Of Experience: " + lecturer.getYearsOfExperience() + "\n";
+                if (lecturer.getHasGraded()) {
+                    msg += "Graded Score: " + lecturer.getGradedScore() + "\n";
+                } else {
+                    msg += "The lecturer has not graded the assignment yet!\n";
+                }
+            } else if (teacher instanceof Tutor) {
+                Tutor tutor = (Tutor) teacher;
+                msg += "Type: Tutor\n";
+                if (tutor.getIsCertified()) {
+                    msg += "Salary: " + tutor.getSalary() + "\n";
+                    msg += "Specialization: " + tutor.getSpecialization() + "\n";
+                    msg += "Academic Qualifications: " + tutor.getAcademicQualifications() + "\n";
+                    msg += "Performance Index: " + tutor.getPerformanceIndex() + "\n";
+                }
+            }
+            msg += "\n"; // Add a newline to separate each teacher's information
+        }
+    
+        JOptionPane.showMessageDialog(frame, msg, "List of Teachers",
+                JOptionPane.PLAIN_MESSAGE);
+    }
+    
 }
+
