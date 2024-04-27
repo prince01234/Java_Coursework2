@@ -197,6 +197,9 @@ public class GUi {
         displayAllButton.setFocusPainted(false);
         displayAllButton.setBorder(buttonBorder);
         displayPanel.add(displayAllButton);
+        displayAllButton.addActionListener(e -> {
+            displayAllTeachers();
+        });
 
         // Add the panels to the main panel
         mainPanel.add(menuPanel);
