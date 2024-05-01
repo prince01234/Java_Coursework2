@@ -84,6 +84,7 @@ public class Tutor extends Teacher
 
             //setting isCertiifed to true
             this.isCertified = true;
+            this.performanceIndex = newPerformanceIndex;
 
             //output when salary is aproved
             System.out.println("Salary has been approved with an appraisal of " + (appraisal) + " amount and new salary is: "+salary);
